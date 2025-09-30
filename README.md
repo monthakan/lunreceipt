@@ -46,21 +46,30 @@
 ---
 
 ## ⚙️ วิธีใช้งาน Git
+### 1. clone เริ่มทำครั้งแรก (ยังไม่มีโค้ดในเครื่อง)
+```bash
+   git clone git@github.com:YOUR-USERNAME/receipt-bot.git
+   cd receipt-bot
+   ```
 
-### 1. Setup ครั้งแรก
+### 2. Setup ครั้งแรก
 ```bash
 cd recipt-bot
 git init
 git remote add origin git@github.com:YOUR-USERNAME/receipt-bot.git
 git remote -v
+```
 
 ### Push ครั้งแรก (ทำแค่ครั้งเดียว)
+```bash
 git add .
 git commit -m "example message" #
 git branch -M main
 git push -u origin main
+```
 
-###Workflow ประจำวัน
+### Workflow ประจำวัน (เคย clone มาแล้ว)
+```bash
     # 1. ดึงโค้ดล่าสุดก่อนเริ่มทำ
         git pull origin main
     # 2. สร้าง branch ของตัวเอง
@@ -77,4 +86,4 @@ git push -u origin main
         git add path/to/your/file.py
         git commit -m "feat: Add basic Streamlit chatbot UI"
         git push origin feature/frontend-ui
-
+```
