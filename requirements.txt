@@ -1,0 +1,31 @@
+# Frontend
+streamlit=1.38.0
+
+# Backend
+fastapi==0.115.0
+uvicorn==0.30.6
+
+# OCR
+pytesseract==0.3.13
+Pillow==10.4.0
+opencv-python==4.10.0.84
+
+# LLM
+openai==1.44.0
+transformers==4.44.2
+
+# Google Sheets
+gspread==6.1.2
+google-auth==2.35.0
+
+# Data & Utils
+pandas==2.2.2
+numpy==1.26.4
+python-dateutil==2.9.0.post0
+
+# Testing
+pytest==8.3.3
+
+# Extra tools
+python-dotenv==1.0.1
+loguru==0.7.2
