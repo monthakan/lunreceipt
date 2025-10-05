@@ -60,3 +60,4 @@ data/*.txt
 tmp/
 temp/
 .tmp/
+.streamlit/secrets.toml
