@@ -61,4 +61,5 @@ tmp/
 temp/
 .tmp/
 .streamlit/secrets.toml
-.streamlit/secrets.toml
+.streamlit/
+.streamlit
