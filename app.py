@@ -9,7 +9,7 @@ st.write("อัพโหลดใบเสร็จ → ระบบจะ OCR 
 uploaded_file = st.file_uploader("Upload Receipt", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
-    st.image(uploaded_file, caption="Uploaded Receipt", use_column_width=True)
+    st.image(uploaded_file, caption="Uploaded Receipt", use_container_width=True)
 
     if st.button("Process Receipt"):
         with st.spinner("Processing..."):
