@@ -5,7 +5,6 @@ import os
 
 # def run_ocr(image_file):
 #     """แปลงรูปภาพเป็นข้อความด้วย Tesseract OCR """
-    
 #     # mock function: สมมติว่า OCR คืนข้อความมา
 #     return "7-Eleven\nCoke x1 20\nBread x2 15\nTotal 50"
 def run_ocr(uploaded_file):
@@ -15,7 +14,6 @@ def run_ocr(uploaded_file):
         content = uploaded_file.getvalue()
         image = vision.Image(content=content)
         response = client.text_detection(image=image)
-        
         if response.error.message:
             raise Exception(response.error.message)
         texts = response.text_annotations
