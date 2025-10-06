@@ -139,6 +139,8 @@ def get_period_range(kind: str):          # สร้างกรอบช่ว
         end = today
     return start, end
 
+if uploaded_file:
+    st.image(uploaded_file, caption="Uploaded Receipt", use_container_width=True)
 def query_summary(kind: str, user_id: str | None = None) -> pd.DataFrame:   # ดึงสรุปจาก Supabase
     start, end = get_period_range(kind)
     q = sb.table("receipts").select("*").gte("date", str(start)).lte("date", str(end)).order("date", desc=False)
