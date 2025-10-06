@@ -63,3 +63,11 @@ temp/
 .streamlit/secrets.toml
 .streamlit/
 .streamlit
+.tmp/.streamlit/secrets.toml
+.venv/
+__pycache__/
+.env
+.streamlit/secrets.toml
+.env
+.venv/
+__pycache__/
