@@ -161,7 +161,7 @@ col1, col2 = st.columns([2,1])
 with col1:
     uploaded = st.file_uploader("อัปโหลดรูปใบเสร็จ", type=["jpg","jpeg","png","webp"])
 with col2:
-    user_id = st.text_input("User ID (optional)", value="")
+    user_id = st.text_input("User ID", value="") # must edit เปลี่ยนเป็น requester_user_id
 
 if uploaded:
     st.image(uploaded, caption="Uploaded Receipt", use_column_width=True)
@@ -178,18 +178,18 @@ if uploaded:
             st.error(f"ไม่สามารถสกัด JSON ได้: {e}")
 
             """
-ให้ผู้ใช้อัปโหลดรูป + ใส่ user_id (ถ้าต้องการ)
+                ให้ผู้ใช้อัปโหลดรูป + ใส่ user_id (ถ้าต้องการ)
 
-แสดงรูป preview
+                แสดงรูป preview
 
-เมื่อกด Process:
+                เมื่อกด Process:
 
-เรียก vision_extract_json(...)
+                เรียก vision_extract_json(...)
 
-เก็บผลลัพธ์ไว้ใน st.session_state["pending_receipt"] (จำค่าข้าม interaction ได้)
+                เก็บผลลัพธ์ไว้ใน st.session_state["pending_receipt"] (จำค่าข้าม interaction ได้)
 
-โชว์ JSON ให้ตรวจสอบ
-            """
+                โชว์ JSON ให้ตรวจสอบ
+                            """
 
 # ---------- UI: Confirm & Save ----------
 st.subheader("✅ Confirm & Save")
