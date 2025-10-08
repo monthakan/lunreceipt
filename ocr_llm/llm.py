@@ -69,3 +69,18 @@ def structure_text(text: str) -> dict:
             "total": None,
             "error": result_text
         }
+    
+def chat_with_llm(message: str) -> str:
+    """
+    ฟังก์ชันนี้ให้ LLM ตอบข้อความทั่วไป เช่น ถามยอดรวม, รายละเอียดใบเสร็จ, สรุป ฯลฯ
+    """
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant for a receipt management app."},
+            {"role": "user", "content": message}
+        ]
+    )
+
+    return response.choices[0].message.content
+

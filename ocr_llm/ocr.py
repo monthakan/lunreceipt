@@ -2,26 +2,51 @@ from PIL import Image
 import pytesseract
 import io
 import os
+import base64
+import json
+from datetime import datetime, timedelta
+from dateutil import parser as dparse
+from openai import OpenAI
+import streamlit as st
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# def run_ocr(image_file):
-#     """แปลงรูปภาพเป็นข้อความด้วย Tesseract OCR """
-#     # mock function: สมมติว่า OCR คืนข้อความมา
-#     return "7-Eleven\nCoke x1 20\nBread x2 15\nTotal 50"
-def run_ocr(uploaded_file):
+def vision_extract_json(file_bytes: bytes, mime: str) -> dict:
+    """ให้ GPT-4o อ่านรูปใบเสร็จและคืน JSON ตามสคีมา"""
+    if not mime:
+        mime = "image/png"
+    b64 = base64.b64encode(file_bytes).decode()
+    data_url = f"data:{mime};base64,{b64}"
+
+    prompt = (
+        "You are a receipt parser for Thai receipts. "
+        "Extract STRICT JSON with keys: vendor, date (YYYY-MM-DD), "
+        "items[{name, qty, unit_price}], subtotal, tax, total, currency. "
+        "Return ONLY JSON (no markdown/prose)."
+    )
+
+    resp = client.chat.completions.create(   # << new SDK call
+        model="gpt-4o-mini",
+        temperature=0,
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": data_url}}
+            ]
+        }]
+    )
+
+    raw = resp.choices[0].message.content
+    # บางรุ่นอาจส่งเป็นชิ้น ๆ; ที่นี่คาดหวังเป็นสตริงเดียว
     try:
-        from google.cloud import vision
-        client = vision.ImageAnnotatorClient()
-        content = uploaded_file.getvalue()
-        image = vision.Image(content=content)
-        response = client.text_detection(image=image)
-        if response.error.message:
-            raise Exception(response.error.message)
-        texts = response.text_annotations
-        if texts and len(texts[0].description.strip()) > 10:
-            return texts[0].description, "Google Vision"
-        else:
-            raise Exception("Vision returned too little text")
-    except Exception as e:
-        img = Image.open(uploaded_file)
-        text = pytesseract.image_to_string(img, lang="tha+eng")
-        return text, f"Tesseract (fallback: {e})"
+        data = json.loads(raw)
+    except Exception:
+        # ถ้าตอบไม่ใช่ JSON ล้วน แสดงผลดิบไว้ช่วยดีบั๊ก
+        raise ValueError(f"Model did not return pure JSON:\n{raw}")
+
+    # normalize วันที่
+    try:
+        data["date"] = dparse.parse(str(data.get("date"))).date().isoformat()
+    except Exception:
+        pass
+    return data
