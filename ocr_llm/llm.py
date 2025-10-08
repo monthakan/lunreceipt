@@ -70,17 +70,14 @@ def structure_text(text: str) -> dict:
             "error": result_text
         }
     
-def chat_with_llm(message: str) -> str:
-    """
-    ฟังก์ชันนี้ให้ LLM ตอบข้อความทั่วไป เช่น ถามยอดรวม, รายละเอียดใบเสร็จ, สรุป ฯลฯ
-    """
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant for a receipt management app."},
-            {"role": "user", "content": message}
-        ]
-    )
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
-    return response.choices[0].message.content
+def chat_with_llm(messages):
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages
+    )
+    return resp.choices[0].message.content
+
 
