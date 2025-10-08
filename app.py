@@ -6,7 +6,7 @@ import streamlit as st
 from ocr_llm.llm_supabase import llm_query_supabase
 from ocr_llm.ocr import vision_extract_json
 from backend.supabase_client import save_to_supabase, query_summary, get_period_range
-
+from sheets.summary import sheet_summary
 # 1) ต้องเรียก set_page_config ให้เร็วที่สุด (ก่อนมี output ใด ๆ)
 st.set_page_config(page_title="📸 Receipt Bot", page_icon="🧾", layout="centered")
 
@@ -65,6 +65,8 @@ else:
             st.session_state.pop("pending_receipt", None)
         else:
             st.error("บันทึกล้มเหลว ตรวจตาราง/สิทธิ์ใน Supabase")
+        sheet_summary()
+    
 
 # ---------- UI: Summary ----------
 st.subheader("📊 Summary")
@@ -80,14 +82,17 @@ if st.button("Get Summary"):
         st.write(f"ช่วง: {start} – {end} | รายการ: {len(df)}")
         st.metric("รวมทั้งหมด (THB)", f"{total:,.2f}")
         if "date" in df.columns and "total" in df.columns:
-            daily = df.groupby(df["date"].dt.date)["total"].sum()
+            df["date"]  = pd.to_datetime(df["date"], errors="coerce")   # ถ้าเป็น ISO ที่มี Z/เขตเวลา จะ parse ได้เอง
+            df["total"] = pd.to_numeric(df["total"], errors="coerce").fillna(0)
+
+            # ตัดแถวที่ parse วันที่ไม่สำเร็จ (NaT)
+            df = df.dropna(subset=["date"])
+
+            # --- สรุปรายวัน ---
+            daily = df.groupby(df["date"].dt.date)["total"].sum().sort_index()
             st.line_chart(daily)
         st.dataframe(df)
-"""
-ถ้ามี pending_receipt ใน session → ให้แก้ไข total ได้เล็กน้อยก่อนเซฟ
 
-กด Save → เรียก save_to_supabase → แจ้งผล และล้าง state เมื่อสำเร็จ
-"""
 st.subheader("💬 Ask about sales")
 query_text = st.text_input("ถามยอดขาย / สรุป")
 if st.button("Ask LLM"):
