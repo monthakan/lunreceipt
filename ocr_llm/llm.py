@@ -14,6 +14,7 @@ def structure_text(text: str) -> dict:
     - shop (store name)
     - items (list of name, qty, price)
     - total (total amount)
+    - 
 
     Receipt Text:
     {text}
@@ -25,7 +26,7 @@ def structure_text(text: str) -> dict:
             {"role": "system", "content": "You are a helpful assistant that extracts structured data from receipts."},
             {"role": "user", "content": prompt}
         ],
-        functions=[
+        functions=[ # Define the function schema
             {
                 "name": "extract_receipt",
                 "description": "Extract receipt fields",
