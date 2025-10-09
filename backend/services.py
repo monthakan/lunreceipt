@@ -2,7 +2,7 @@
 from ocr_llm.validation import validate_receipt
 from sheets.sheets import save_receipt, get_summary_sheet
 from ocr_llm.ocr import run_ocr
-from ocr_llm.llm import structure_text
+from ocr_llm.chat_with_llm import structure_text
 
 #tan edit
 def process_receipt(image_file):
@@ -15,4 +15,3 @@ def save_to_sheet(data):
 
 def get_summary(period="daily"):
     return get_summary_sheet(period)
-

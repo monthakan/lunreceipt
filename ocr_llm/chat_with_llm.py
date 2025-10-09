@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 def structure_text(text: str) -> dict:
     prompt = f"""
     Extract the following fields from the receipt text (English or Thai):
@@ -14,7 +13,6 @@ def structure_text(text: str) -> dict:
     - shop (store name)
     - items (list of name, qty, price)
     - total (total amount)
-    - 
 
     Receipt Text:
     {text}
@@ -69,15 +67,26 @@ def structure_text(text: str) -> dict:
             "total": None,
             "error": result_text
         }
-    
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
 
-def chat_with_llm(messages):
-    resp = client.chat.completions.create(
+def chat_with_llm(message: str) -> str:
+    """
+    ฟังก์ชันนี้ให้ LLM ตอบทั้งเรื่องใบเสร็จ และพูดคุยทั่วไปได้
+    """
+    system_message = """
+    You are a helpful assistant for a receipt management app.
+    You can:
+    - Answer questions about receipts, totals, or spending summaries.
+    - Help the user calculate or interpret data from receipts.
+    - Chat normally and naturally about general topics if the user isn’t talking about receipts.
+    Be friendly, concise, and conversational.
+    """
+
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=messages
+        messages=[
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": message}
+        ]
     )
-    return resp.choices[0].message.content
 
-
+    return response.choices[0].message.content
