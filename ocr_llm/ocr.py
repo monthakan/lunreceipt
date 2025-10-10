@@ -89,7 +89,7 @@ def vision_extract_json(file_bytes: bytes, mime: str = "image/png") -> dict:
     #ปกติ
     prompt = (
         "You are a receipt parser for Thai receipts. "
-        "Extract STRICT JSON with keys: vendor, date, items[{name, qty, unit_price}], "
+        "Extract STRICT JSON with keys: vendor, items[{name, qty, unit_price}], "
         "subtotal, tax, total, currency. Return ONLY JSON."
     )
     try:
