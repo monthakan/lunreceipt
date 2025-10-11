@@ -52,22 +52,38 @@ def get_period_range(kind: str):          # สร้างกรอบช่ว
         end = today
     return start, end
 
-def query_summary(kind: str, user_id: str | None = None) -> pd.DataFrame:   # ดึงสรุปจาก Supabase
-    start, end = get_period_range(kind)
-    cols = ["user_id", "date", "vendor", "total", "tax", "currency"]
-    q = sb.table("receipts").select(",".join(cols)).gte("date", str(start)).lte("date", str(end)).order("date", desc=False)
-    if user_id:
+def query_summary(kind: str, user_id: str | None = None, start_date: 'date | None' = None, end_date: 'date | None' = None) -> pd.DataFrame:
+    """ดึงสรุปจาก Supabase ด้วย date range หรือ period"""
+    # ถ้าส่ง start_date/end_date มาให้ใช้ start_date/end_date
+    if start_date and end_date:
+        start = start_date
+        end = end_date
+    else:
+        start, end = get_period_range(kind)
+    cols = ["user_id", "date", "vendor", "total", "tax", "currency"] # คอลัมน์ที่ต้องการดึงมา
+    # Supabase ต้องการ ISO format string แม้ว่าจะเก็บเป็น nanosecond
+    start_iso = start.isoformat()
+    end_iso = end.isoformat()
+    # สร้าง query เพื่อดึงข้อมูล
+    q = (sb.table("receipts").select(",".join(cols)).gte("date", start_iso).lte("date", end_iso).order("date", desc=False))
+
+    if user_id: # กรองด้วย user_id ถ้ามี
         q = q.eq("user_id", user_id)
     rows = q.execute().data or []
     df = pd.DataFrame(rows)
     if df.empty:
         return df
+    # แปลง date - Supabase เก็บเป็น nanosecond
     if "date" in df.columns:
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        if df['date'].dtype in ['int64', 'float64']: # nanosecond
+            df["date"] = pd.to_datetime(df["date"], unit='ns') # แปลงจาก nanosecond เป็น datetime
+        else:
+            df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    # แปลง data type เพราะบางคอลัมน์อาจมี NaN
     for col in cols:
         if col in df.columns:
             if col in ["user_id", "vendor", "currency"]:
                 df[col] = df[col].astype("string").str.strip()
-            else :
+            else:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
