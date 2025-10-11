@@ -341,8 +341,8 @@ def render_upload_panel(max_mb: int, vision_extract_fn, department_key: str = "d
                 st.session_state["pending_receipt"] = data
                 st.success("สำเร็จ! กรุณาตรวจสอบข้อมูลด้านล่าง")
                 #เพิ่มส่วนแสดง JSON ด้านล่าง
-                st.subheader("📑 Extracted Data", anchor=False)
-                st.json(data)
+                # st.subheader("📑 Extracted Data", anchor=False)
+                # st.json(data)
             except Exception as e:
                 st.error(f"ไม่สามารถสกัด JSON ได้: {e}")
 
@@ -379,3 +379,4 @@ def render_confirm_save_panel(save_fn) -> None:
             st.rerun()
         else:
             st.error("บันทึกล้มเหลว ตรวจตาราง/สิทธิ์ใน Supabase")
+        sheet_summary()

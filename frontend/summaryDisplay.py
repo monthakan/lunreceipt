@@ -51,13 +51,11 @@ def render_summary_panel(query_summary, get_period_range) -> None:
         # เตรียมข้อมูลสำหรับ Altair
         df_plot = daily.reset_index().rename(columns={"date": "Date", "Total (THB)": "Total"})
 
-        # --- กราฟ Altair: สีม่วง + ปรับความหนา ---
-        if len(df_plot) <= 1:
-            chart = (
+        chart = (
                 alt.Chart(df_plot)
                 .mark_bar(
                     color="#d9a1ea",
-                    size=36,  # ความหนาของแท่ง (ปรับได้)
+                    size=36,
                     cornerRadiusTopLeft=6,
                     cornerRadiusTopRight=6,
                 )
@@ -70,19 +68,7 @@ def render_summary_panel(query_summary, get_period_range) -> None:
                     ],
                 )
             )
-        else:
-            chart = (
-                alt.Chart(df_plot)
-                .mark_line(point=True, stroke="#d9a1ea", strokeWidth=3)
-                .encode(
-                    x=alt.X("Date:T", title=""),
-                    y=alt.Y("Total:Q", title="รวม (THB)"),
-                    tooltip=[
-                        alt.Tooltip("Date:T", title="วันที่"),
-                        alt.Tooltip("Total:Q", title="รวม (THB)", format=",.2f"),
-                    ],
-                )
-            )
+
 
         # ทำพื้นหลังพล็อตอ่อนลง + ไม่มีกรอบ view
         chart = (
