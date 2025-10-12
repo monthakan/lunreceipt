@@ -86,4 +86,14 @@ def query_summary(kind: str, user_id: str | None = None, start_date: 'date | Non
                 df[col] = df[col].astype("string").str.strip()
             else:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
+    from sheets import convert_fx
+    if "currency" in df.columns:
+        mask = df["currency"].notna() & (df["currency"].str.upper() != "THB")
+        for i in df[mask].index:
+            ccy = df.at[i, "currency"]
+            if pd.notna(df.at[i, "total"]):
+                df.at[i, "total"] = convert_fx(df.at[i, "total"], ccy, "THB")
+            if pd.notna(df.at[i, "tax"]):
+                df.at[i, "tax"] = convert_fx(df.at[i, "tax"], ccy, "THB")
+            df.at[i, "currency"] = "THB"
     return df

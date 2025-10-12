@@ -52,30 +52,23 @@ def render_summary_panel(query_summary, get_period_range) -> None:
         df_plot = daily.reset_index().rename(columns={"date": "Date", "Total (THB)": "Total"})
 
         chart = (
-                alt.Chart(df_plot)
-                .mark_bar(
-                    color="#d9a1ea",
-                    size=36,
-                    cornerRadiusTopLeft=6,
-                    cornerRadiusTopRight=6,
-                )
-                .encode(
-                    x=alt.X("yearmonthdate(Date):O", title=""),
-                    y=alt.Y("Total:Q", title="รวม (THB)"),
-                    tooltip=[
-                        alt.Tooltip("Date:T", title="วันที่"),
-                        alt.Tooltip("Total:Q", title="รวม (THB)", format=",.2f"),
-                    ],
-                )
+            alt.Chart(df_plot)
+            .mark_bar(
+                color="#d9a1ea",
+                size=36,
+                cornerRadiusTopLeft=6,
+                cornerRadiusTopRight=6,
             )
-
-
-        # ทำพื้นหลังพล็อตอ่อนลง + ไม่มีกรอบ view
-        chart = (
-            chart
-            .configure(background='transparent')  # นอกพื้นที่กราฟโปร่งใส
+            .encode(
+                x=alt.X("yearmonthdate(Date):T", title="วันที่"),
+                y=alt.Y("Total:Q", title="รวม (THB)"),
+                tooltip=[
+                    alt.Tooltip("Date:T", title="วันที่", format="%Y-%m-%d"),
+                    alt.Tooltip("Total:Q", title="รวม (THB)", format=",.2f"),
+                ],
+            )
             .configure_view(
-                fill='rgba(255, 240, 247, 0.75)',  # พื้นที่พล็อตชมพูอ่อน
+                fill='rgba(255, 240, 247, 0.75)',
                 stroke=None
             )
             .configure_axis(
